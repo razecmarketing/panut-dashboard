@@ -15,35 +15,52 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Inicializa o estado da sessão, se necessário
-if 'produtos' not in st.session_state:
-    st.session_state.produtos = {
+# Função para garantir a carga de dados consistente
+@st.cache_data
+def gerar_dados_iniciais():
+    """
+    Gera um conjunto de dados iniciais para o dashboard.
+    Esta função é decorada com @st.cache_data para garantir que os dados
+    sejam consistentes entre reexecuções no Streamlit Cloud.
+    """
+    produtos = {
         'Graxas': {'preco': 50.00, 'estoque': 1000},
         'Pastas': {'preco': 100.00, 'estoque': 5000},
         'Óleos': {'preco': 200.00, 'estoque': 2000},
         'Produtos de limpeza': {'preco': 200.00, 'estoque': 5000},
         'Produtos de manutenção': {'preco': 100.00, 'estoque': 1000}
     }
-
-if 'filiais' not in st.session_state:
-    st.session_state.filiais = ['Brasil', 'Alemanha', 'EUA']
-
-if 'vendas' not in st.session_state:
-    st.session_state.vendas = []
-    # Função para gerar dados iniciais
+    
+    filiais = ['Brasil', 'Alemanha', 'EUA']
+    
+    # Gerar vendas simuladas
+    vendas = []
     hoje = datetime.now()
     for _ in range(50):
         data = hoje - timedelta(days=np.random.randint(0, 30))
-        produto = np.random.choice(list(st.session_state.produtos.keys()))
-        filial = np.random.choice(st.session_state.filiais, p=[0.6, 0.2, 0.2])
+        produto = np.random.choice(list(produtos.keys()))
+        filial = np.random.choice(filiais, p=[0.6, 0.2, 0.2])
         quantidade = np.random.randint(1, 10)
-        st.session_state.vendas.append({
+        vendas.append({
             'data': data.strftime('%Y-%m-%d'),
             'produto': produto,
             'filial': filial,
             'quantidade': quantidade,
-            'valor': st.session_state.produtos[produto]['preco'] * quantidade
+            'valor': produtos[produto]['preco'] * quantidade
         })
+    
+    return produtos, filiais, vendas
+
+# Inicializa o estado da sessão com dados consistentes
+if 'dados_inicializados' not in st.session_state:
+    # Carregar dados iniciais
+    produtos_iniciais, filiais_iniciais, vendas_iniciais = gerar_dados_iniciais()
+    
+    # Atribuir ao session_state
+    st.session_state.produtos = produtos_iniciais
+    st.session_state.filiais = filiais_iniciais
+    st.session_state.vendas = vendas_iniciais
+    st.session_state.dados_inicializados = True
 
 # Funções auxiliares
 def calcular_analytics():
