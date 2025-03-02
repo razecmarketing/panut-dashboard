@@ -1,7 +1,5 @@
-flask==3.0.2
-flask-cors==4.0.0
 streamlit==1.32.0
 pandas==2.2.0
 plotly==5.18.0
 numpy==1.26.3
-requests==2.31.0
+python-dotenv==1.0.0

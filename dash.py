@@ -6,6 +6,14 @@ from datetime import datetime, timedelta
 import requests
 import numpy as np
 import time
+import os
+from dotenv import load_dotenv
+
+# Carrega variáveis de ambiente
+load_dotenv()
+
+# URL da API
+API_URL = os.getenv('API_URL', 'http://localhost:5000')
 
 # Configurações da página
 st.set_page_config(
